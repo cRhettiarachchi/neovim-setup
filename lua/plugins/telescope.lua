@@ -58,12 +58,12 @@ return {
       },
       pickers = {
         find_files = {
-          file_ignore_patterns = { 'node_modules', '.git', '.venv' },
+          file_ignore_patterns = { 'node_modules', '.git', '.venv', '.next', '.idea', '.swc', '.vscode', 'coverage' },
           hidden = true,
         },
       },
       live_grep = {
-        file_ignore_patterns = { 'node_modules', '.git', '.venv' },
+        file_ignore_patterns = { 'node_modules', '.git', '.venv', '.next', '.idea', '.swc', '.vscode', 'coverage' },
         additional_args = function(_)
           return { '--hidden' }
         end,
@@ -91,6 +91,13 @@ return {
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
     vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>se', function()
+      require('telescope.builtin').live_grep {
+        additional_args = function()
+          return { '--case-sensitive', '--word-regexp' }
+        end,
+      }
+    end, { desc = '[S]earch [E]xact word (case-sensitive)' })
 
     -- Slightly advanced example of overriding default behavior and theme
     vim.keymap.set('n', '<leader>/', function()
