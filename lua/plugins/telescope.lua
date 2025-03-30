@@ -75,10 +75,50 @@ return {
       },
     }
 
+    vim.api.nvim_create_user_command('GrepChanged', function()
+      local Job = require 'plenary.job'
+      Job:new({
+        command = 'git',
+        args = { 'diff', '--name-only' },
+        on_exit = function(j)
+          local result = j:result()
+          if vim.tbl_isempty(result) then
+            vim.schedule(function()
+              print 'No changed files!'
+            end)
+            return
+          end
+
+          -- 🔧 wrap live_grep inside vim.schedule to avoid the error
+          vim.schedule(function()
+            require('telescope.builtin').live_grep {
+              search_dirs = result,
+              prompt_title = 'Live Grep in Changed Files',
+            }
+          end)
+        end,
+      }):start()
+    end, {})
+
     -- Enable Telescope extensions if they are installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
 
+    function GrepByExtension()
+      vim.ui.input({ prompt = 'Enter file extension (e.g. tsx, js, py): ' }, function(ext)
+        if ext == nil or ext == '' then
+          print '検索中止！No extension provided.'
+          return
+        end
+
+        require('telescope.builtin').live_grep {
+          prompt_title = 'Grep in *.' .. ext .. ' files',
+          additional_args = function()
+            return { '--glob', '*.' .. ext }
+          end,
+        }
+      end)
+    end
     -- See `:help telescope.builtin`
     local builtin = require 'telescope.builtin'
     vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -91,6 +131,10 @@ return {
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
     vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>gs', require('telescope.builtin').git_status, { desc = 'Telescope: Git Status (changed files)' })
+    vim.keymap.set('n', '<leader>ggs', '<cmd>GrepChanged<cr>', { desc = 'Live Grep in Changed Files' })
+    vim.keymap.set('n', '<leader>gx', GrepByExtension, { desc = 'Live Grep by file extension' })
+
     vim.keymap.set('n', '<leader>se', function()
       require('telescope.builtin').live_grep {
         additional_args = function()

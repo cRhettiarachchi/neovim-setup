@@ -13,6 +13,32 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.api.nvim_create_user_command('FixIndent', function()
+  vim.opt_local.expandtab = true
+  vim.opt_local.tabstop = 2
+  vim.opt_local.shiftwidth = 2
+  vim.opt_local.softtabstop = 2
+  vim.cmd 'normal gg=G'
+end, {})
+
+vim.keymap.set('n', '<leader>ra', function()
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.fn.buflisted(bufnr) == 1 then
+      local modified = vim.api.nvim_buf_get_option(bufnr, 'modified')
+      if not modified then
+        vim.api.nvim_buf_call(bufnr, function()
+          vim.cmd 'checktime'
+        end)
+      end
+    end
+  end
+
+  local ok, neotree = pcall(require, 'neo-tree.sources.manager')
+  if ok then
+    neotree.refresh 'filesystem'
+  end
+end, { desc = 'Reload All Buffers if Not Modified' })
+
 -- Set up plugins
 require('lazy').setup {
   require 'plugins.neotree',
@@ -31,6 +57,8 @@ require('lazy').setup {
   require 'plugins.comment',
   require 'plugins.neotest',
   require 'plugins.tabout',
+  require 'plugins.eslint-nvim',
+  require 'plugins.nvim-ts-autotag',
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
