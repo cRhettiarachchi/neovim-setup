@@ -68,13 +68,13 @@ return {
       require 'none-ls.formatting.ruff_format',
 
       -- 🧠 Add CSpell diagnostics + code actions
-      cspell.diagnostics.with({
+      cspell.diagnostics.with {
         config = cspell_config,
         diagnostics_postprocess = function(diagnostic)
           diagnostic.severity = vim.diagnostic.severity.HINT
         end,
-      }),
-      cspell.code_actions.with({ config = cspell_config }),
+      },
+      cspell.code_actions.with { config = cspell_config },
     }
 
     -- null-ls setup
@@ -101,4 +101,3 @@ return {
     }
   end,
 }
-

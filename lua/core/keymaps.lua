@@ -53,7 +53,7 @@ vim.keymap.set('n', '<C-h>', ':wincmd h<CR>', opts)
 vim.keymap.set('n', '<C-l>', ':wincmd l<CR>', opts)
 
 -- Tabs
-vim.keymap.set('n', '<leader>to', ':tabnew<CR>', opts) -- open new tab
+vim.keymap.set('n', '<leader>nto', ':tabnew<CR>', opts) -- open new tab
 vim.keymap.set('n', '<leader>tx', ':tabclose<CR>', opts) -- close current tab
 vim.keymap.set('n', '<leader>tn', ':tabn<CR>', opts) --  go to next tab
 vim.keymap.set('n', '<leader>tp', ':tabp<CR>', opts) --  go to previous tab
@@ -75,3 +75,9 @@ vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, { desc = 'Open float
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 vim.keymap.set('n', '<leader>cd', ':%bd|e#<CR>', opts)
+
+vim.keymap.set('n', '<leader>i', function()
+  vim.o.ignorecase = not vim.o.ignorecase
+  vim.o.smartcase = vim.o.ignorecase -- Enable smartcase only when ignorecase is on
+  print('ignorecase: ' .. tostring(vim.o.ignorecase) .. ', smartcase: ' .. tostring(vim.o.smartcase))
+end, { desc = 'Toggle ignorecase + smartcase' })
