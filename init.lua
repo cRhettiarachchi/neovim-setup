@@ -59,6 +59,7 @@ require('lazy').setup {
   require 'plugins.tabout',
   require 'plugins.eslint-nvim',
   require 'plugins.nvim-ts-autotag',
+  require 'plugins.snacks',
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
